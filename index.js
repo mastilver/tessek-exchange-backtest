@@ -1,5 +1,8 @@
 'use strict';
 
+var coindeskApi = require('coindesk-api');
+var Rx = require('Rx');
+
 var initialCurrencyAmont = 100;
 
 module.exports = function (params) {
@@ -24,7 +27,7 @@ module.exports = function (params) {
 
     function getBackTestResult(){
 
-        // if the last order is a buy, we cancel that order
+        // if the last order is a buy, cancel that order
         if(lastOrder && lastOrder.type === 'buy'){
             sell(lastOrder.amont, lastOrder.price);
         }
@@ -94,4 +97,23 @@ module.exports = function (params) {
     function getAssetName(){
         return 'btc';
     }
+};
+
+module.exports.getCandles = function(){
+
+    var coindeskApiInstance = new coindeskApi();
+
+    return Rx.Observable.create(function (observer) {
+
+        coindeskApiInstance.getPricesForSingleCurrency('2014-01-01', '2014-12-31', 'usd', function(err, result){
+            result.map(function(item){
+                observer.onNext({
+                    time: item.time,
+                    close: item.rate,
+                });
+            });
+
+            observer.onCompleted();
+        });
+    });
 };
