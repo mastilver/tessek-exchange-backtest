@@ -1,7 +1,7 @@
 'use strict';
 
 var coindeskApi = require('coindesk-api');
-var Rx = require('Rx');
+var Rx = require('rx');
 
 var initialCurrencyAmont = 100;
 
